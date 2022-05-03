@@ -8,14 +8,12 @@ This is a basic security check for software supply chain risk.
 
 ```
 ./run.sh \
-	https://github.com/psf/requests \
-	v2.27.1 \
+	requests==2.27.1 \
 	requests-2.27.1-py2.py3-none-any.whl \
-	requests==2.27.1
+	v2.27.1
 ```
 
 The arguments are:
-- git repo
-- git branch
-- filename of wheel (used for comparison)
-- pip package spec (used for downloading)
+- pip package spec (used for pip download)
+- filename of wheel
+- git branch representing desired version (but git repo is read from wheel metadata)

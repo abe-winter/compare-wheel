@@ -3,10 +3,14 @@
 
 set -euo pipefail
 
-repo=$1 # "https://github.com/JustAnotherArchivist/snscrape"
-branch=$2 # "v0.4.3.20220106"
-whlname=$3 # "snscrape-0.4.3.20220106-py3-none-any.whl"
-package=$4 # "snscrape==0.4.3.20220106"
+package=$1
+whlname=$2
+branch=$3
+
+# download
+pip download --no-deps $package
+repo=$(./metakey.py $whlname -k Project-URL -s Source)
+echo found repo in wheel metadata: $repo
 
 prefix=$(echo $repo | awk -F/ '{print $NF}')
 
@@ -20,15 +24,13 @@ docker build -t buildcheck \
 
 # painfully extract from docker
 docker image save buildcheck -o buildcheck.tar
+# todo: stream this instead of writing and deleting files
 tar xf buildcheck.tar --strip=1 --wildcards '*/layer.tar'
 mkdir -p built
 cd built
 tar xf ../layer.tar
 cd ..
 rm buildcheck.tar layer.tar
-
-# download
-pip download --no-deps $package
 
 # compare
 ./ziphash.py $whlname --compare built/$whlname
